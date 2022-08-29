@@ -1,0 +1,77 @@
+# Reload config file after any modification to see the changes on the notebook
+
+SETUP:
+  DATA_PATH: '../../Gulnaz_Ganeeva/Pixelated detector/21-09-30 TiAl b3n15/region1/region1/20210930 163056/region1.mib'
+#  DATA_PATH: '../../Gulnaz_Ganeeva/Pixelated detector/21-09-30 TiAl b3n15/region1/region1/20210930 163056/region1.mib'
+
+  DATA_SHAPE: [ 640,641 ] # (The shape mux include the flyback pixel in the y dimension )
+  CALIB_DATA_PATH: '../../Gulnaz_Ganeeva/Pixelated detector/22-06-27 curls/20220627_133807/2 vacuum C2=70.mib'
+  SEMIANGLE: 28 # Semiangle in mrads
+  PATTERN_CALIBRATED: True
+  CAlIB_COOR: [136.0, 116.0, 78.50] # [cx, cy, r]
+  PLOT_SIZE: [ 49,60 ] #[20,25] #[49,60]
+  THRESHOLD_MULTUPLIER: 5 # lower this value to find more hot pixels. Values between 5 and 20 work well.
+  LOCAL: True
+  PLOT_SIZE: [49,60] #[20,25] #[49,60]
+
+ROI:
+  N_LINES: 3
+  LINE_WIDTHS: [2,5]
+  N_CIRCLES: 12
+  #CIRCLES_RADIUS: [5,10,20]
+  CIRCLES_RADIUS: [2,3,4,5,6,7,8,9,10,15,20]
+
+TEST:
+
+  BATCH_SIZE: 4
+  CUDA: False
+  MODEL_WEIGHTS: 'weights/segmentation/130_segmentor.tar'
+
+INPUT:
+  SOURCE: '/Users/federico/Desktop/cvlabdata2/cvlab/datasets_federico/Datasets/dislocations/ALL_DATA_fixed_bottom_img_with_semantics_resized/'
+  #  SOURCE: 'D:\Datasets\dislocations\ALL_DATA_fixed_bottom_resized\'
+  #/cvlabdata2/cvlab/datasets_federico/Datasets/dislocations/ALL_DATA_fixed_bottom_img_with_semantics_resized/train/left_image
+
+TRAINING:
+
+  ONLY_SAVE_FEATURES: False
+  MODEL: 'unet-efficient'
+  MODEL_DIR: 'models_effnet0_features/'
+  SAVE_MODEL_STEP: 10
+  AUGMENTATION: True
+
+  LOSS: 'bce'
+
+  EXPERIMENT_NAME: 'dislocations_segmentation_effnet-b0'
+  TRAINING_SET: 'dislocations' # possible 'us3d', 'dislocations'
+  NUM_CHANNELS: 1
+
+  NUM_WORKERS: 4
+  PIN_MEMORY: True
+
+  RESUME: ''
+  START_EPOCH: 0
+  EPOCHS: 150
+
+  BATCH_SIZE: 2
+  TEST_BATCH_SIZE: 2
+
+  BASE_LR: 0.001
+  LR_DECAY: 1e-6
+  MOMENTUM: 0.9
+
+  W_DECAY: 1e-4
+  OPTIMIZER: 'Adam'
+
+  AUG: False
+
+  CUDA: False
+  GPU_ID: 1
+
+  SEED: 42
+
+LOGGING:
+
+  ENABLE_LOGGING: True
+  LOG_DIR: 'logs_effnet0_features/'
+  LOG_INTERVAL: 1

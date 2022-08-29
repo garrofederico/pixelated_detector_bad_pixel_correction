@@ -1,0 +1,84 @@
+apiVersion: run.ai/v1
+kind: RunaiJob
+metadata:
+  name: garro-jupyter-dislocations
+  labels:
+    priorityClassName: "build"
+    user: federico.garro
+spec:
+  template:
+    metadata:
+      labels:
+        user: federico.garro # User e.g. firstname.lastname
+    spec:
+      hostIPC: true
+#      securityContext:
+#        runAsUser: 248795 # insert uid found in people.epfl in admistrative data
+#        runAsGroup: 20226 # insert gid as found in people.epfl in admistrative data
+#        fsGroup: 11166
+      containers:
+      - name: perform-job
+        image: ic-registry.epfl.ch/cvlab/lis/lab-pytorch-apex:latest
+        workingDir : "/cvlabdata2/cvlab/datasets_federico/"
+        command:
+          - "/opt/lab/setup_and_run_command.sh"
+          - "sudo pip install yacs && sudo pip install imgaug && timeout 8h jupyter lab --ip=0.0.0.0 --no-browser --notebook-dir=/cvlabdata2/cvlab/datasets_federico/dislocations/"
+#          - "cd /cvlabdata2/cvlab/datasets_federico/dislocations/notebooks/ && sudo pip install yacs && sudo pip install imgaug && timeout 4h jupyter lab --ip=0.0.0.0 --no-browser --notebook-dir=/cvlabdata2/cvlab/datasets_federico/dislocations/notebooks/"
+
+          # runs the command on the 2nd line
+          # timeout will ensure this dies after some time, so we don't risk leaving it running forever
+
+
+        env:
+          - name: CLUSTER_USER
+            value: "garro" # set this
+          - name: CLUSTER_USER_ID
+            # set this, run `id` on cvlab cluster to get the number, it will print among other things:
+            # uid=number(yourname)
+            value: "248795"
+          - name: CLUSTER_GROUP_NAME
+            value: "CVLAB-unit"
+          - name: CLUSTER_GROUP_ID
+            value: "11166"
+          - name: JUPYTER_CONFIG_DIR
+            value: "/cvlabdata2/home/lis/kubernetes_example/.jupyter"
+            # change this value to my case
+
+        ports:
+          - containerPort: 8888
+            name: jupyter
+
+          #- name: PYTHONPATH
+           # value: "/cvlabdata2/home/fua/code/pyt/util:/cvlabdata2/home/fua/code/pyt/math:/cvlabdata2/home/fua/code/pyt/math/linalg:/cvlabdata2/home/fua/code/pyt/math/optim:/cvlabdata2/home/fua/code/pyt/math/geom:/cvlabdata2/home/fua/code/pyt/learn:/cvlabdata2/home/fua/code/pyt/learn/percept:/cvlabdata2/home/fua/code/pyt/misc:/cvlabdata2/home/fua/code/pyt/misc/mnist:/cvlabdata2/home/fua/code/pyt/lib/python/:/cvlabdata2/home/fua/code/pyt"
+        resources:
+          limits:
+          #memory: 32Gi
+            nvidia.com/gpu: 0.1
+          #resources:
+            #requests:
+              #memory: 32Gi
+        volumeMounts:
+          - mountPath: /cvlabsrc1
+            name: cvlabsrc1
+          - mountPath: /cvlabdata1
+            name: cvlabdata1
+          - mountPath: /cvlabdata2
+            name: cvlabdata2
+          - mountPath: /dev/shm
+            name: dshm
+      volumes:
+          - name: cvlabsrc1
+            persistentVolumeClaim:
+              claimName: runai-pv-cvlabsrc1
+          - name: cvlabdata1
+            persistentVolumeClaim:
+              claimName: runai-pv-cvlabdata1
+          - name: cvlabdata2
+            persistentVolumeClaim:
+              claimName: runai-pv-cvlabdata2
+          - name: dshm
+            emptyDir:
+              medium: Memory
+
+      restartPolicy: Never
+      schedulerName: runai-scheduler

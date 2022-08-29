@@ -1,0 +1,13 @@
+# Reload config file after any modification to see the changes on the notebook
+
+SETUP:
+  DATA_PATH: '../Datasets/pixelated_detector/20220727_164629/6 C2=150 a=70mrad deg=0.mib'
+#  DATA_PATH: '../Datasets/pixelated_detector/20220727_135309/1 C2=150 deg=0.mib'
+  DATA_SHAPE: [ 640,641 ] # (The shape mux include the flyback pixel in the y dimension )
+  CALIB_DATA_PATH: '../../Gulnaz_Ganeeva/Pixelated detector/22-07-15/20220715_163116/2 C2=70 vacuum.mib'
+  SEMIANGLE: 28 # Semiangle in mrads
+  PATTERN_CALIBRATED: True
+  CAlIB_COOR: [145.0, 116.0, 75.50] # [cx, cy, r]
+  PLOT_SIZE: [ 49,60 ] #[20,25] #[49,60]
+  THRESHOLD_MULTUPLIER: 5 # lower this value to find more hot pixels. Values between 5 and 20 work well.
+  LOCAL: True

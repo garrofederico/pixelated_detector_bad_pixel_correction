@@ -1,0 +1,74 @@
+apiVersion: run.ai/v1
+kind: RunaiJob
+metadata:
+  name: oner-tabea
+  labels:
+    priorityClassname: "build"
+    user: oner
+
+spec:
+  template:
+    metadata:
+      labels:
+        user: oner
+    spec: 
+      restartPolicy: Never
+      
+      containers:
+      - name: perform-job
+        image: ic-registry.epfl.ch/cvlab/lis/lab-python-ml:cuda11
+        imagePullPolicy: Always # load the newest version of the image
+        workingDir : "/cvlabdata2/home/oner/"
+        #command: ["/opt/lab/setup_and_wait.sh"]
+        #   this one will do nothing and wait, so you can enter the container yourself with
+        #   kubectl exec -it pod_name /bin/bash
+        
+        command:
+           - "/opt/lab/setup_and_run_command.sh"
+           - "sleep 600h"
+        # runs the command on the 2nd line
+  
+        env:
+        - name: CLUSTER_USER
+          value: "" # set this to your user name
+        - name: CLUSTER_USER_ID
+        # set this, run `id` on cvlab cluster to get the number, it will print among other things:
+        # uid=number(yourname)
+          value: "" # set this to your uid 
+        - name: CLUSTER_GROUP_NAME
+          value: "CVLAB-unit"
+        - name: CLUSTER_GROUP_ID
+          value: "11166"
+
+        volumeMounts:
+          - mountPath: /scratch
+            name: scratch
+          - mountPath: /dev/shm
+            name: dshm
+  
+        # specify that it uses a GPU!
+        resources:
+           limits:
+             nvidia.com/gpu: 0 # requesting GPUs
+           requests:
+             cpu: "1000m"
+        
+        ports:
+          - containerPort: 8888
+            name: jupyter
+  
+      schedulerName: runai-scheduler
+      nodeSelector:
+        run.ai/type: S8 # "S8" (CPU only), "G9" (Nvidia V100) or "G10" (Nvidia A100)
+    
+      volumes:
+        - name: scratch
+          persistentVolumeClaim:
+            claimName: runai-synergistic-scratch
+        
+        # shared memory, often needed by PyTorch dataloaders
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 8Gi
+  

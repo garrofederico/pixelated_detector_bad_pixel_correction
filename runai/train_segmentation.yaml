@@ -1,0 +1,85 @@
+apiVersion: run.ai/v1
+kind: RunaiJob
+metadata:
+  name: garro-stereo-matching
+  labels:
+    user: garro
+    priority: "1"
+#    priorityClassName: "build"
+spec:
+  template:
+    metadata:
+      labels:
+        app: dislocations
+        user: garro
+        priority: "0"
+    spec:
+      restartPolicy: Never
+      schedulerName: runai-scheduler
+      containers:
+        - name: perform-job
+          image: ic-registry.epfl.ch/cvlab/garro/dislocations:latest
+          imagePullPolicy: Always
+          workingDir: "/cvlabdata2/cvlab/datasets_federico/dislocations"
+          command:
+            - "/opt/lab/setup_and_wait.sh"
+#            - "/opt/lab/setup_and_run_command.sh"
+#            - "cd /cvlabdata2/cvlab/datasets_federico/dislocations/
+#            && python train_segmentation.py --config_file='delineation/configs/dislocation_synthetic_segmentation.yml'"
+          env:
+            - name: CLUSTER_USER
+              value: "garro" # set this
+            - name: CLUSTER_USER_ID # set this
+              value: "248795"
+            - name: CLUSTER_GROUP_NAME
+              value: "CVLAB-unit" # 75544(runai-cvlab)
+            - name: CLUSTER_GROUP_ID
+              value: "11166"  #"11166"
+            - name: WANDB_API_KEY
+              value: "4893a49e39ba791d5d4c6c1eec868f2c99da0172"
+            - name: SSH_PUBLIC_KEY
+              value: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDHMT6cvBBsueWsKXouL3orkntMU7oytM2UuUQj/AzNgH84BZ/O7mHDR1EG4yk5+3lxVpBK80m1tp0PlZ1sT0deziBbMoy+XwTGErftnVtKI2Q2Pq/N3Y+Ob3/swjwjoIOpYsf3zOtRXte4GTXqXsdBUcYTc6jR+2VVr6x2ptegQ1FUhxDJpfaKq0NEbN2VclXjUqeN35tX90+j6Ib5AFbbK4Jatibp35HeTUT4OxrZeAYMVkNiFxStO4Ze2ZhXyZ75IJ63Gxq3PrS+hJLb3c92Yptf7dFp2CtlUIYZ5xlcQGaVy/pC8upjwR2AHksJgOfivTU1XS2QYZL9bAzNkmzfmCFRPUHViSjLgDLmRThVBU0C06DIjar2AonACNwKltq1MnCk1MpMaIzD+EkVGsQl9a4kUMzZCKQvM0x3YHlzfQtnQdVd3EmzU3y1p5nNDpatDJ2YbNXqUybgJbFIOtO/LEgSnJbZRlkMyqHt+mnaPPxoUMrx+7UDFweBt1rkfCE= federico@garro.local"
+            - name: AUTO_SHUTDOWN_TIME
+              value: "8h"
+            - name: PYTHONUNBUFFERED
+              value: "1"
+          ports:
+            - containerPort: 22
+              name: ssh
+
+          volumeMounts:
+            - mountPath: /cvlabsrc1
+              name: cvlabsrc1
+            - mountPath: /cvlabdata1
+              name: cvlabdata1
+            - mountPath: /cvlabdata2
+              name: cvlabdata2
+            - mountPath: /dev/shm
+              name: dshm
+
+          # specify that it uses a GPU!
+          resources:
+            limits: # if only limits is specified, request equals to limits
+#              nvidia.com/gpu: 1
+              nvidia.com/gpu: 1
+
+      volumes:
+#     commented modules are for cvlab namespace, the current ones are for synergistic namespace
+        - name: cvlabsrc1
+          persistentVolumeClaim:
+            claimName: runai-pv-synergistic-cvlabsrc1
+#            claimName: runai-pv-cvlabsrc1
+
+        - name: cvlabdata1
+          persistentVolumeClaim:
+            claimName: runai-pv-synergistic-cvlabdata1
+#            claimName: runai-pv-cvlabdata1
+
+        - name: cvlabdata2
+          persistentVolumeClaim:
+            claimName: runai-pv-synergistic-cvlabdata2
+#            claimName: runai-pv-cvlabdata2
+
+        - name: dshm
+          emptyDir:
+            medium: Memory
