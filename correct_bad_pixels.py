@@ -21,9 +21,9 @@ def get_args():
         description='Corrects the bad pixels of a pixem 4D dataset and outputs a .zspy file')
     # Add the arguments
     parser.add_argument('-p', '--paths', metavar='path/to/dataset(s)', nargs='+', type=str, required=True,
-                           help='the path(s) to the 4D dataset (can be multiple paths separated by space)')
+                        help='the path(s) to the 4D dataset (can be multiple paths separated by space)')
     parser.add_argument('-d', '--dimensions', metavar='dimension', nargs=2, type=int, required=True,
-                           help='dimensions of the dataset (without including the flyback pixel) e.g. 640 640')
+                        help='dimensions of the dataset (without including the flyback pixel) e.g. 640 640')
 
     # Execute the parse_args() method
     args = parser.parse_args()
@@ -97,9 +97,10 @@ def main():
 
         # remove reshaped intermediate
         reshaped_path.unlink()
-        # Calculate total time
-        end_time = datetime.datetime.now()
-        print(f'Complete processing done! Total time: {end_time - total_time_start}')
+    # Calculate total time
+    end_time = datetime.datetime.now()
+    print(f'Complete processing done! Total time: {end_time - total_time_start}')
+
 
 if __name__ == '__main__':
     main()
