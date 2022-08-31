@@ -95,8 +95,8 @@ def main():
         end_time = datetime.datetime.now()
         print(f'Done! (it took {end_time - start_time})')
 
-        # # remove reshaped intermediate
-        # reshaped_path.unlink()
+        # remove reshaped intermediate
+        reshaped_path.unlink()
         # Calculate total time
         end_time = datetime.datetime.now()
         print(f'Complete processing done! Total time: {end_time - total_time_start}')
