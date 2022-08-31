@@ -35,6 +35,7 @@ def main():
     input_paths = [Path(x) for x in args.paths]
     input_dims = args.dimensions
 
+    total_time_start = datetime.datetime.now()
     for i, path in enumerate(input_paths):
         print(f"the path {i + 1} is {path}")
 
@@ -94,8 +95,11 @@ def main():
         end_time = datetime.datetime.now()
         print(f'Done! (it took {end_time - start_time})')
 
-        # TODO: remove reshaped intermediate
-
+        # # remove reshaped intermediate
+        # reshaped_path.unlink()
+        # Calculate total time
+        end_time = datetime.datetime.now()
+        print(f'Complete processing done! Total time: {end_time - total_time_start}')
 
 if __name__ == '__main__':
     main()
