@@ -29,6 +29,7 @@ def get_args():
     args = parser.parse_args()
     return args
 
+# TODO: Refactor: use a library to time code or use a decorator to avoid copies
 
 def main():
     args = get_args()
@@ -97,6 +98,7 @@ def main():
 
         # remove reshaped intermediate
         reshaped_path.unlink()
+        converted_path.unlink()
     # Calculate total time
     end_time = datetime.datetime.now()
     print(f'Complete processing done! Total time: {end_time - total_time_start}')
