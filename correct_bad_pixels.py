@@ -1,15 +1,7 @@
-import math
-import os
-import numpy as np
-import math
 import hyperspy.api as hs
 from converter_nord import save_signal
-import pyxem as pxm
-import os
-import yaml
-from yacs.config import CfgNode as CN
+
 import datetime
-import os
 import sys
 import argparse
 from pathlib import Path
