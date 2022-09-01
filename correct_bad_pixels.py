@@ -48,10 +48,10 @@ def main():
 
         start_time = datetime.datetime.now()
         print(f'Reshaping dataset... ({start_time})')
-        if path.exists():
-            path.unlink(missing_ok=True)
+        if reshaped_path.exists():
+            reshaped_path.unlink(missing_ok=True)
 
-        save_signal(path, reshaped_path, input_paths[0], input_dims[1], 1)
+        save_signal(str(path), str(reshaped_path), input_dims[0], input_dims[1], 1)
         end_time = datetime.datetime.now()
         print(f'Reshaping done! (it took {end_time - start_time})')
 
@@ -60,7 +60,7 @@ def main():
         print(f'Converting to .zspy format... ({start_time})')
         start_time = datetime.datetime.now()
         # Load the reshaped dataset
-        dp = hs.load(reshaped_path, lazy=True)
+        dp = hs.load(str(reshaped_path), lazy=True)
 
         dp.save(converted_path)
         end_time = datetime.datetime.now()
